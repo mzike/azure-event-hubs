@@ -20,6 +20,7 @@ namespace SampleSender
         private const string EventHubConnectionString = "Endpoint=sb://lcm-eh-ns-ae-dv.servicebus.windows.net/;SharedAccessKeyName=lcm-cart-event-send;SharedAccessKey=0UfRR0JzlFXVygNXNgv8XUCsZKM08fnnSKHHJG8jyuI=;EntityPath=lcm-eh-ae-dv";
         private const string EventHubName = "lcm-eh-ae-dv";
         private static bool SetRandomPartitionKey = false;
+        private const string ApplicationInsightsInstrumentationKey = "4264e762-b655-4d8e-8af9-257c54cb957e";
 
         public static void Main(string[] args)
         {
@@ -31,7 +32,7 @@ namespace SampleSender
 
             IServiceCollection services = new ServiceCollection();
 
-            services.AddApplicationInsightsTelemetryWorkerService("4264e762-b655-4d8e-8af9-257c54cb957e");
+            services.AddApplicationInsightsTelemetryWorkerService(ApplicationInsightsInstrumentationKey);
 
             // Build ServiceProvider.
             IServiceProvider serviceProvider = services.BuildServiceProvider();
@@ -55,7 +56,7 @@ namespace SampleSender
 
             logger.LogInformation("Sender running at: {time}, about to send messages to Event Hub.", DateTimeOffset.Now);
 
-            await SendMessagesToEventHub(100, logger, telemetryClient);
+            await SendMessagesToEventHub(1000, logger, telemetryClient);
 
             await eventHubClient.CloseAsync();
 
@@ -90,7 +91,7 @@ namespace SampleSender
                         {
                             await eventHubClient.SendAsync(new EventData(Encoding.UTF8.GetBytes(message)));
                             Console.WriteLine($"Sent message: '{message}'");
-                                telemetryClient.TrackEvent($"Message {i} call event completed.");
+                            telemetryClient.TrackEvent($"Message {i} call event completed.");
                         }
                     }
                     catch (Exception exception)
