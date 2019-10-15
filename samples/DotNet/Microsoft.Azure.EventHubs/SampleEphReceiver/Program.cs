@@ -10,13 +10,13 @@ namespace SampleEphReceiver
 
     public class Program
     {
-        private const string EventHubConnectionString = "Event Hubs connection string";
-        private const string EventHubName = "event hub name";
-        private const string StorageContainerName = "Storage account container name";
-        private const string StorageAccountName = "Storage account name";
-        private const string StorageAccountKey = "Storage account key";
-		
-        private static readonly string StorageConnectionString = string.Format("DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1}", StorageAccountName, StorageAccountKey);
+        private const string EventHubConnectionString = "Endpoint=sb://lcm-eh-ns-ae-dv.servicebus.windows.net/;SharedAccessKeyName=LcmListenAccessPolicy;SharedAccessKey=d82lE/9gomRmNzdY6oNZi4xMUKg6GzWrNAifRdocR84=";
+        private const string EventHubName = "lcm-eh-ae-dv";
+        private const string StorageContainerName = "blbephcontainer";
+        private const string StorageAccountName = "zlcmehubchkpoint";
+        private const string StorageAccountKey = "lIPUr5pslaM2rdb5rmfeKZVzG0QLY6NMz7Pkz81hoMyFBBE9B/5lI0AimuQJillCLVZC9s6WfRrbfLVAHdxugA==";
+
+        private static readonly string StorageConnectionString = "DefaultEndpointsProtocol=https;AccountName=zlcmehubchkpoint;AccountKey=Y6jby7NYyldZxRD5e6fhxjHR3A4JFoRTvxLMzn46k8d4c75AKG2N6Y8BsVxUXgYLDms2GgyUkAPR99gSrcT5yA==";
 
         public static void Main(string[] args)
         {
