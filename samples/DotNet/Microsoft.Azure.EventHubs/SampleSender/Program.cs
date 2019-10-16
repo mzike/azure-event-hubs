@@ -1,11 +1,13 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System.IO;
 using System.Net.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.Extensions.Configuration;
 
 namespace SampleSender
 {
@@ -17,22 +19,28 @@ namespace SampleSender
     public class Program
     {
         private static EventHubClient eventHubClient;
-        private const string EventHubConnectionString = "Endpoint=sb://lcm-eh-ns-ae-dv.servicebus.windows.net/;SharedAccessKeyName=lcm-cart-event-send;SharedAccessKey=0UfRR0JzlFXVygNXNgv8XUCsZKM08fnnSKHHJG8jyuI=;EntityPath=lcm-eh-ae-dv";
-        private const string EventHubName = "lcm-eh-ae-dv";
         private static bool SetRandomPartitionKey = false;
-        private const string ApplicationInsightsInstrumentationKey = "4264e762-b655-4d8e-8af9-257c54cb957e";
-
+       
         public static void Main(string[] args)
         {
-            MainAsync(args).GetAwaiter().GetResult();
+          MainAsync(args).GetAwaiter().GetResult();
         }
 
         private static async Task MainAsync(string[] args)
         {
+            var builder = new ConfigurationBuilder()
+                          .SetBasePath(Directory.GetCurrentDirectory())
+                          .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+            IConfigurationRoot configuration = builder.Build();
+
+            var settings = new AppSettings();
+
+            configuration.Bind(settings);
 
             IServiceCollection services = new ServiceCollection();
 
-            services.AddApplicationInsightsTelemetryWorkerService(ApplicationInsightsInstrumentationKey);
+            services.AddApplicationInsightsTelemetryWorkerService(settings.ApplicationInsightsInstrumentationKey);
 
             // Build ServiceProvider.
             IServiceProvider serviceProvider = services.BuildServiceProvider();
@@ -47,9 +55,9 @@ namespace SampleSender
             // Creates an EventHubsConnectionStringBuilder object from a the connection string, and sets the EntityPath.
             // Typically the connection string should have the Entity Path in it, but for the sake of this simple scenario
             // we are using the connection string from the namespace.
-            var connectionStringBuilder = new EventHubsConnectionStringBuilder(EventHubConnectionString)
+            var connectionStringBuilder = new EventHubsConnectionStringBuilder(settings.EventHubConnectionString)
             {
-                EntityPath = EventHubName
+                EntityPath = settings.EventHubName
             };
 
             eventHubClient = EventHubClient.CreateFromConnectionString(connectionStringBuilder.ToString());
